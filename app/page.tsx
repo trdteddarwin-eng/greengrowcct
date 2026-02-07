@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import ScenarioPicker from "@/components/ScenarioPicker";
-import { getCallHistory, getBrowserId } from "@/lib/storage";
+import LocalDataMigration from "@/components/LocalDataMigration";
+import { getCallHistory } from "@/lib/storage";
 import type { CallSession, CustomScenarioData, Scenario } from "@/lib/types";
 import { customScenarioToScenario } from "@/lib/types";
 
@@ -19,44 +20,45 @@ export default function HomePage() {
   const [customScenarios, setCustomScenarios] = useState<Scenario[]>([]);
 
   useEffect(() => {
-    const history: CallSession[] = getCallHistory();
-    if (history.length === 0) {
-      setStats({ totalCalls: 0, avgScore: 0, bestScore: 0, streak: 0 });
-      return;
-    }
-
-    const scores = history
-      .filter((c) => c.scorecard)
-      .map((c) => c.scorecard!.overallScore);
-
-    const totalCalls = history.length;
-    const avgScore = scores.length > 0
-      ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
-      : 0;
-    const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
-
-    // Streak: consecutive calls with score >= 7 from the most recent
-    let streak = 0;
-    const sortedByDate = [...history]
-      .filter((c) => c.scorecard)
-      .sort((a, b) => new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime());
-    for (const call of sortedByDate) {
-      if (call.scorecard && call.scorecard.overallScore >= 7) {
-        streak++;
-      } else {
-        break;
+    async function loadStats() {
+      const history: CallSession[] = await getCallHistory();
+      if (history.length === 0) {
+        setStats({ totalCalls: 0, avgScore: 0, bestScore: 0, streak: 0 });
+        return;
       }
-    }
 
-    setStats({ totalCalls, avgScore, bestScore, streak });
+      const scores = history
+        .filter((c) => c.scorecard)
+        .map((c) => c.scorecard!.overallScore);
+
+      const totalCalls = history.length;
+      const avgScore = scores.length > 0
+        ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
+        : 0;
+      const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
+
+      // Streak: consecutive calls with score >= 7 from the most recent
+      let streak = 0;
+      const sortedByDate = [...history]
+        .filter((c) => c.scorecard)
+        .sort((a, b) => new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime());
+      for (const call of sortedByDate) {
+        if (call.scorecard && call.scorecard.overallScore >= 7) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+
+      setStats({ totalCalls, avgScore, bestScore, streak });
+    }
+    loadStats();
   }, []);
 
   useEffect(() => {
     async function fetchCustomScenarios() {
       try {
-        const browserId = getBrowserId();
-        if (!browserId) return;
-        const res = await fetch(`/api/scenarios?browser_id=${browserId}`);
+        const res = await fetch("/api/scenarios");
         if (res.ok) {
           const data = await res.json();
           const mapped = (data.scenarios as CustomScenarioData[]).map(customScenarioToScenario);
@@ -86,6 +88,9 @@ export default function HomePage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Local Data Migration Banner */}
+      <LocalDataMigration />
+
       {/* Hero Section */}
       <div className="text-center py-12">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">

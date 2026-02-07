@@ -116,7 +116,7 @@ export interface StoredData {
 
 export interface CustomScenarioData {
   id: string;
-  browser_id: string;
+  user_id: string;
   name: string;
   difficulty: Difficulty;
   industry: string;

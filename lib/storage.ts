@@ -1,100 +1,133 @@
 // ============================================================
-// GreenGrow Digital CCT — Local Storage Utilities
+// GreenGrow Digital CCT — Supabase Storage Utilities
 // ============================================================
 
 import type { CallSession } from "@/lib/types";
 import { defaultPlaybookText } from "@/lib/default-playbook";
-
-const PLAYBOOK_KEY = "cct-playbook";
-const CALL_HISTORY_KEY = "cct-call-history";
+import { createClient } from "@/lib/supabase/client";
 
 /**
- * Returns the user's stored playbook text, or the default playbook
- * if none has been saved.
+ * Returns the user's stored playbook text from Supabase,
+ * or the default playbook if none has been saved.
  */
-export function getPlaybook(): string {
-  if (typeof window === "undefined") return defaultPlaybookText;
+export async function getPlaybook(): Promise<string> {
   try {
-    const stored = localStorage.getItem(PLAYBOOK_KEY);
-    return stored ?? defaultPlaybookText;
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return defaultPlaybookText;
+
+    const { data, error } = await supabase
+      .from("playbooks")
+      .select("text")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error || !data) return defaultPlaybookText;
+    return data.text || defaultPlaybookText;
   } catch {
     return defaultPlaybookText;
   }
 }
 
 /**
- * Saves custom playbook text to localStorage.
+ * Saves custom playbook text to Supabase (upsert by user_id).
  */
-export function savePlaybook(text: string): void {
-  if (typeof window === "undefined") return;
+export async function savePlaybook(text: string): Promise<void> {
   try {
-    localStorage.setItem(PLAYBOOK_KEY, text);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("playbooks").upsert(
+      {
+        user_id: user.id,
+        text,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
   } catch (error) {
-    console.error("Failed to save playbook to localStorage:", error);
+    console.error("Failed to save playbook:", error);
   }
 }
 
 /**
- * Returns the full call history from localStorage, sorted by most
- * recent first.
+ * Returns the full call history from Supabase, sorted by most recent first.
  */
-export function getCallHistory(): CallSession[] {
-  if (typeof window === "undefined") return [];
+export async function getCallHistory(): Promise<CallSession[]> {
   try {
-    const stored = localStorage.getItem(CALL_HISTORY_KEY);
-    if (!stored) return [];
-    const history: CallSession[] = JSON.parse(stored);
-    return history.sort(
-      (a, b) =>
-        new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
-    );
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from("call_sessions")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error || !data) return [];
+
+    return data.map((row) => ({
+      id: row.id,
+      scenarioId: row.scenario_id,
+      scenarioName: row.scenario_name,
+      startedAt: row.started_at,
+      endedAt: row.ended_at,
+      durationSeconds: row.duration_seconds,
+      transcript: row.transcript as CallSession["transcript"],
+      scorecard: row.scorecard as CallSession["scorecard"],
+    }));
   } catch {
     return [];
   }
 }
 
 /**
- * Saves a completed call session to localStorage, appending it
- * to the existing history.
+ * Saves a completed call session to Supabase.
  */
-export function saveCall(session: CallSession): void {
-  if (typeof window === "undefined") return;
+export async function saveCall(session: CallSession): Promise<void> {
   try {
-    const history = getCallHistory();
-    history.push(session);
-    localStorage.setItem(CALL_HISTORY_KEY, JSON.stringify(history));
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("call_sessions").insert({
+      user_id: user.id,
+      scenario_id: session.scenarioId,
+      scenario_name: session.scenarioName,
+      started_at: session.startedAt,
+      ended_at: session.endedAt,
+      duration_seconds: session.durationSeconds,
+      transcript: session.transcript,
+      scorecard: session.scorecard ?? null,
+    });
   } catch (error) {
-    console.error("Failed to save call to localStorage:", error);
+    console.error("Failed to save call:", error);
   }
 }
 
 /**
- * Clears all call history from localStorage.
+ * Clears all call history for the current user from Supabase.
  */
-export function clearHistory(): void {
-  if (typeof window === "undefined") return;
+export async function clearHistory(): Promise<void> {
   try {
-    localStorage.removeItem(CALL_HISTORY_KEY);
-  } catch (error) {
-    console.error("Failed to clear call history from localStorage:", error);
-  }
-}
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-/**
- * Returns a persistent browser ID for scoping custom scenarios.
- * Creates one in localStorage if it doesn't exist.
- */
-export function getBrowserId(): string {
-  if (typeof window === "undefined") return "";
-  try {
-    const BROWSER_ID_KEY = "cct-browser-id";
-    let id = localStorage.getItem(BROWSER_ID_KEY);
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem(BROWSER_ID_KEY, id);
-    }
-    return id;
-  } catch {
-    return crypto.randomUUID();
+    await supabase.from("call_sessions").delete().eq("user_id", user.id);
+  } catch (error) {
+    console.error("Failed to clear call history:", error);
   }
 }

@@ -116,7 +116,7 @@ export default function CallInterface({
       const { token } = await tokenRes.json();
 
       // 2. Get playbook
-      const playbookText = getPlaybook();
+      const playbookText = await getPlaybook();
 
       // 3. Build system prompt
       const systemInstruction = getProspectSystemPrompt(scenario, playbookText, documentContext);

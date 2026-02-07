@@ -11,12 +11,15 @@ export default function PlaybookPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = getPlaybook();
-    setPlaybookText(stored);
+    async function load() {
+      const stored = await getPlaybook();
+      setPlaybookText(stored);
+    }
+    load();
   }, []);
 
-  function handleSave(text: string) {
-    savePlaybook(text);
+  async function handleSave(text: string) {
+    await savePlaybook(text);
     setPlaybookText(text);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);

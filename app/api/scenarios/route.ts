@@ -1,21 +1,23 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const browserId = searchParams.get("browser_id");
+export async function GET() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!browserId) {
+  if (!user) {
     return NextResponse.json(
-      { error: "browser_id is required" },
-      { status: 400 }
+      { error: "Unauthorized" },
+      { status: 401 }
     );
   }
 
   const { data, error } = await supabase
     .from("custom_scenarios")
     .select("*")
-    .eq("browser_id", browserId)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -30,6 +32,18 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   let body: Record<string, unknown>;
 
   try {
@@ -42,7 +56,6 @@ export async function POST(request: Request) {
   }
 
   const {
-    browser_id,
     name,
     difficulty,
     industry,
@@ -57,7 +70,7 @@ export async function POST(request: Request) {
     document_name,
   } = body as Record<string, string | null>;
 
-  if (!browser_id || !name || !difficulty || !prospect_name || !prospect_role || !prospect_company || !description || !prospect_behavior) {
+  if (!name || !difficulty || !prospect_name || !prospect_role || !prospect_company || !description || !prospect_behavior) {
     return NextResponse.json(
       { error: "Missing required fields" },
       { status: 400 }
@@ -67,7 +80,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from("custom_scenarios")
     .insert({
-      browser_id,
+      user_id: user.id,
       name,
       difficulty,
       industry: industry ?? "",

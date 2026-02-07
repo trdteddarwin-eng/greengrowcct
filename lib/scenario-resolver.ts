@@ -1,5 +1,5 @@
 import { scenarios } from "@/lib/scenarios";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { Scenario, CustomScenarioData } from "@/lib/types";
 
 export interface ResolvedScenario {
@@ -23,6 +23,7 @@ export async function resolveScenario(
   // Check custom scenarios (ID format: custom_<uuid>)
   if (id.startsWith("custom_")) {
     const uuid = id.slice("custom_".length);
+    const supabase = createClient();
 
     const { data, error } = await supabase
       .from("custom_scenarios")

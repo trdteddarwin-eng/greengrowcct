@@ -12,17 +12,20 @@ export default function HistoryPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const data = getCallHistory();
-    setHistory(data);
-    setLoaded(true);
+    async function load() {
+      const data = await getCallHistory();
+      setHistory(data);
+      setLoaded(true);
+    }
+    load();
   }, []);
 
-  function handleClearHistory() {
+  async function handleClearHistory() {
     const confirmed = window.confirm(
       "Are you sure you want to clear your entire call history? This cannot be undone."
     );
     if (confirmed) {
-      clearHistory();
+      await clearHistory();
       setHistory([]);
     }
   }

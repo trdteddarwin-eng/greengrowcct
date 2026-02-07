@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,7 +17,19 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth");
+    router.refresh();
+  }
+
+  // Don't render the nav on the auth page
+  if (pathname.startsWith("/auth")) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-gray-950/80">
@@ -52,6 +66,21 @@ export default function Header() {
               </Link>
             );
           })}
+
+          {/* User info + logout */}
+          {user && (
+            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-800">
+              <span className="text-xs text-gray-400 truncate max-w-[150px]">
+                {user.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 text-xs text-gray-400 hover:text-white bg-gray-800/50 hover:bg-gray-800 rounded-md transition-colors"
+              >
+                Log out
+              </button>
+            </div>
+          )}
         </nav>
 
         {/* Mobile hamburger */}
@@ -103,6 +132,24 @@ export default function Header() {
               </Link>
             );
           })}
+
+          {/* Mobile user info + logout */}
+          {user && (
+            <div className="mt-2 pt-2 border-t border-gray-800">
+              <div className="px-4 py-2 text-xs text-gray-500 truncate">
+                {user.email}
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/50 transition-colors"
+              >
+                Log out
+              </button>
+            </div>
+          )}
         </nav>
       )}
     </header>

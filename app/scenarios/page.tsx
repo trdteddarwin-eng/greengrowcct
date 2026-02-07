@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { CustomScenarioData } from "@/lib/types";
-import { getBrowserId } from "@/lib/storage";
 
 function getDifficultyColor(difficulty: string): string {
   switch (difficulty) {
@@ -32,8 +31,7 @@ export default function ScenariosPage() {
 
   async function fetchScenarios() {
     try {
-      const browserId = getBrowserId();
-      const res = await fetch(`/api/scenarios?browser_id=${browserId}`);
+      const res = await fetch("/api/scenarios");
       if (res.ok) {
         const data = await res.json();
         setScenarios(data.scenarios || []);

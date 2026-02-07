@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Difficulty } from "@/lib/types";
-import { getBrowserId } from "@/lib/storage";
 import DocumentUpload from "@/components/wizard/DocumentUpload";
 import ScenarioConfig from "@/components/wizard/ScenarioConfig";
 import PersonaEditor from "@/components/wizard/PersonaEditor";
@@ -58,13 +57,10 @@ export default function ScenarioWizard() {
     setError(null);
 
     try {
-      const browserId = getBrowserId();
-
       const res = await fetch("/api/scenarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          browser_id: browserId,
           name: scenarioName,
           difficulty,
           industry,

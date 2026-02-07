@@ -25,7 +25,7 @@ function ScorecardPageContent() {
       setLoading(true);
       setError(null);
 
-      const playbookText = getPlaybook();
+      const playbookText = await getPlaybook();
 
       const response = await fetch("/api/score", {
         method: "POST",
@@ -60,7 +60,7 @@ function ScorecardPageContent() {
         transcript: data.transcript,
         scorecard: sc,
       };
-      saveCall(callSession);
+      await saveCall(callSession);
 
       // Clear the pending data from sessionStorage
       sessionStorage.removeItem("cct-pending-score");
