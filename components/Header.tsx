@@ -24,8 +24,7 @@ export default function Header() {
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth");
-    router.refresh();
+    window.location.href = "/auth";
   }
 
   // Don't render the nav on the auth page
