@@ -8,6 +8,8 @@ import { useAuth } from "@/components/AuthProvider";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/call", label: "Practice" },
+  { href: "/research", label: "Research" },
+  { href: "/live-call", label: "Live Call" },
   { href: "/scenarios", label: "Scenarios" },
   { href: "/playbook", label: "Playbook" },
   { href: "/objections", label: "Objections" },

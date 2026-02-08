@@ -202,6 +202,45 @@ export interface GeminiLiveConfig {
   onError: (error: string) => void;
 }
 
+// --- Pre-Call Research ---
+
+export interface MarketingAngle {
+  service: string;
+  reason: string;
+}
+
+export interface ResearchResult {
+  businessName: string;
+  businessSummary: string;
+  talkingPoints: string[];
+  marketingAngles: MarketingAngle[];
+  painPoints: string[];
+  suggestedOpener: string;
+  suggestedApproach: string;
+}
+
+// --- Live Call Coaching ---
+
+export interface LiveSuggestion {
+  whatToSayNext: string;
+  currentStage: string;
+  stageGoal: string;
+  quickTips: string[];
+  objectionDetected: {
+    objection: string;
+    suggestedResponse: string;
+  } | null;
+}
+
+// --- Gemini Listen (transcription-only session) ---
+
+export interface GeminiListenConfig {
+  token: string;
+  onTranscriptUpdate: (turns: TranscriptTurn[]) => void;
+  onConnectionChange: (connected: boolean) => void;
+  onError: (error: string) => void;
+}
+
 // --- Audio ---
 
 export interface AudioCaptureHandle {

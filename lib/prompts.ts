@@ -188,6 +188,112 @@ The "shouldHaveSaid" field is critical — it must be a realistic, word-for-word
 }
 
 /**
+ * Builds the prompt for Gemini to analyze a business website and generate
+ * structured research for pre-call preparation.
+ */
+export function getResearchPrompt(websiteText: string, url: string): string {
+  return `You are an expert B2B sales researcher preparing a cold call rep for a call to a local business. Analyze the following website content and generate actionable research.
+
+WEBSITE URL: ${url}
+
+WEBSITE CONTENT:
+---
+${websiteText}
+---
+
+INSTRUCTIONS:
+Analyze this business's website and extract everything a cold caller needs to have a great conversation. Think like a sales rep who wants to sound informed and relevant, not like they're reading from a script.
+
+Your response must be ONLY valid JSON matching this exact structure (no markdown, no code blocks — just the JSON object):
+
+{
+  "businessName": "<the business name as it appears on the site>",
+  "businessSummary": "<2-3 sentence summary of what this business does, who they serve, and what makes them different>",
+  "talkingPoints": [
+    "<specific thing from the site the rep can reference to sound informed — e.g. a recent blog post, an award, a new service, a team member>",
+    "<another specific detail — mention their location, years in business, or a unique offering>",
+    "<a third detail — look for testimonials, case studies, partnerships, or community involvement>"
+  ],
+  "marketingAngles": [
+    {
+      "service": "<specific marketing service that would help this business — e.g. 'Google Ads for [their service]'>",
+      "reason": "<why this service makes sense based on what you see on their site>"
+    },
+    {
+      "service": "<another relevant service>",
+      "reason": "<why>"
+    },
+    {
+      "service": "<a third option>",
+      "reason": "<why>"
+    }
+  ],
+  "painPoints": [
+    "<likely pain point based on their industry and what's missing from their site — e.g. 'No online booking system visible'>",
+    "<another gap or challenge — e.g. 'Blog hasn't been updated in months'>",
+    "<a third one — e.g. 'No Google reviews widget or social proof section'>"
+  ],
+  "suggestedOpener": "<a complete, word-for-word pattern interrupt opener the rep can use — must reference the business by name and something specific from the site. Follow the pattern: acknowledge cold call, reference something specific, ask for 30 seconds>",
+  "suggestedApproach": "<2-3 sentences describing the overall strategy for this call — which pain point to lead with, what value drop to use, what kind of meeting to propose>"
+}
+
+Be specific and actionable. Reference actual details from the website — names, services, locations, features. Generic advice is useless. The rep should feel like they know this business after reading your research.`;
+}
+
+/**
+ * Builds the prompt for Gemini to analyze a live call transcript and
+ * generate real-time coaching suggestions.
+ */
+export function getCoachingPrompt(
+  transcript: string,
+  playbookText: string,
+  businessContext?: string
+): string {
+  const contextSection = businessContext
+    ? `\nBUSINESS CONTEXT (from pre-call research):\n---\n${businessContext}\n---\nUse this context to make your suggestions specific to this prospect.\n`
+    : "";
+
+  return `You are a real-time cold call coach sitting next to a sales rep during a live call. Analyze the transcript below and provide coaching suggestions.
+
+THE REP'S PLAYBOOK:
+---
+${playbookText}
+---
+${contextSection}
+LIVE CALL TRANSCRIPT (most recent lines at the bottom):
+---
+${transcript}
+---
+
+INSTRUCTIONS:
+Based on where this call is RIGHT NOW, provide coaching. The rep needs to know what to say NEXT — not what they should have done differently in the past. Be forward-looking and actionable.
+
+Your response must be ONLY valid JSON matching this exact structure:
+
+{
+  "whatToSayNext": "<the exact words the rep should say next — a complete, natural sentence or two they can say verbatim. Make it specific to what the prospect just said>",
+  "currentStage": "<which playbook stage the call is currently in: 'Pattern Interrupt Opener', 'Permission Bridge', 'Pain Probe', 'Value Drop', 'Objection Jujitsu', or 'Assumptive Close'>",
+  "stageGoal": "<one sentence describing what the rep should accomplish in this stage before moving to the next>",
+  "quickTips": [
+    "<short, actionable tip relevant to this exact moment — e.g. 'Slow down, you're talking too fast'>",
+    "<another tip — e.g. 'Ask about their current marketing spend'>",
+    "<a third tip — e.g. 'Mirror their last phrase back to them'>"
+  ],
+  "objectionDetected": null
+}
+
+If the prospect just raised an objection (e.g. "not interested", "send me an email", "we already have someone", "too expensive", "bad timing"), set objectionDetected to:
+{
+  "objection": "<the objection they raised, summarized>",
+  "suggestedResponse": "<word-for-word response using the Agree-Ask-Advance framework from the playbook>"
+}
+
+Otherwise, set objectionDetected to null.
+
+Focus on what's happening NOW. The rep is on a live call and needs immediate, specific guidance — not a lecture.`;
+}
+
+/**
  * Formats a millisecond timestamp into a readable string (e.g., "1:23").
  */
 function formatTimestamp(ms: number): string {
