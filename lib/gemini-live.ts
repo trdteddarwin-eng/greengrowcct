@@ -45,7 +45,7 @@ export interface GeminiLiveSessionHandle {
 export async function createGeminiLiveSession(
   config: GeminiLiveConfig
 ): Promise<GeminiLiveSessionHandle> {
-  const { token, systemInstruction, onTranscriptUpdate, onAudioData, onConnectionChange, onError } =
+  const { token, systemInstruction, voiceName, onTranscriptUpdate, onAudioData, onConnectionChange, onError } =
     config;
 
   // Internal transcript state
@@ -117,7 +117,7 @@ export async function createGeminiLiveSession(
         systemInstruction,
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: "Kore" },
+            prebuiltVoiceConfig: { voiceName: voiceName || "Kore" },
           },
         },
         inputAudioTranscription: {},

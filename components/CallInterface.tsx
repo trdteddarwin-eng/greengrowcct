@@ -129,6 +129,7 @@ export default function CallInterface({
       const session = await createGeminiLiveSession({
         token,
         systemInstruction,
+        voiceName: scenario.voice,
         onTranscriptUpdate: (turns: TranscriptTurn[]) => {
           setTranscript([...turns]);
         },

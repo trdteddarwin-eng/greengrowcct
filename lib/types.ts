@@ -20,6 +20,7 @@ export interface Scenario {
   prospectBehavior: string;
   hook?: string;
   icon: string; // emoji
+  voice?: string; // Gemini Live voice name (e.g. "Charon", "Kore")
 }
 
 // --- Objection Bank ---
@@ -194,6 +195,7 @@ export interface ScoreResponse {
 export interface GeminiLiveConfig {
   token: string;
   systemInstruction: string;
+  voiceName?: string;
   onTranscriptUpdate: (turns: TranscriptTurn[]) => void;
   onAudioData: (pcmData: ArrayBuffer) => void;
   onConnectionChange: (connected: boolean) => void;
