@@ -6,13 +6,23 @@ import type { CallSession } from "@/lib/types";
 import { defaultPlaybookText } from "@/lib/default-playbook";
 import { createClient } from "@/lib/supabase/client";
 
+function getSupabaseClient() {
+  try {
+    return createClient();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Returns the user's stored playbook text from Supabase,
  * or the default playbook if none has been saved.
  */
 export async function getPlaybook(): Promise<string> {
   try {
-    const supabase = createClient();
+    const supabase = getSupabaseClient();
+    if (!supabase) return defaultPlaybookText;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -36,7 +46,9 @@ export async function getPlaybook(): Promise<string> {
  */
 export async function savePlaybook(text: string): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -60,7 +72,9 @@ export async function savePlaybook(text: string): Promise<void> {
  */
 export async function getCallHistory(): Promise<CallSession[]> {
   try {
-    const supabase = createClient();
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -94,7 +108,9 @@ export async function getCallHistory(): Promise<CallSession[]> {
  */
 export async function saveCall(session: CallSession): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -120,7 +136,9 @@ export async function saveCall(session: CallSession): Promise<void> {
  */
 export async function clearHistory(): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
