@@ -241,6 +241,16 @@ export interface GeminiListenConfig {
   onError: (error: string) => void;
 }
 
+// --- User Events ---
+
+export interface UserEvent {
+  id: string;
+  event_type: string;
+  metadata: Record<string, unknown>;
+  page_path: string | null;
+  created_at: string;
+}
+
 // --- Audio ---
 
 export interface AudioCaptureHandle {

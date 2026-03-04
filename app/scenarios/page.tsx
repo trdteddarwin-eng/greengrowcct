@@ -172,6 +172,15 @@ export default function ScenariosPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() =>
+                    router.push(`/scenarios/${scenario.id}/edit`)
+                  }
+                  className="px-3 py-2 rounded-lg border border-gray-700 text-xs text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleDelete(scenario.id)}
                   disabled={deleting === scenario.id}
                   className="px-3 py-2 rounded-lg border border-gray-700 text-xs text-gray-400 hover:text-red-400 hover:border-red-500/30 transition-colors disabled:opacity-50"

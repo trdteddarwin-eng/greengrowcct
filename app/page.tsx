@@ -112,9 +112,9 @@ export default function HomePage() {
         {statCards.map((stat) => (
           <div
             key={stat.label}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-5 text-center hover:border-green-500/30 transition-colors"
+            className="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center hover:border-green-500/30 transition-colors"
           >
-            <div className="text-2xl font-bold text-green-500">
+            <div className="text-3xl font-bold text-green-500">
               {stat.value}
             </div>
             <div className="text-sm text-gray-400 mt-1">{stat.label}</div>

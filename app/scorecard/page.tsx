@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import ScorecardDisplay from "@/components/Scorecard";
 import { getPlaybook, saveCall } from "@/lib/storage";
 import type { Scorecard, TranscriptTurn, CallSession } from "@/lib/types";
+import { trackEvent } from "@/lib/tracking";
 
 interface PendingScoreData {
   transcript: TranscriptTurn[];
@@ -61,6 +62,16 @@ function ScorecardPageContent() {
         scorecard: sc,
       };
       await saveCall(callSession);
+
+      // Track call scored
+      trackEvent({
+        eventType: "call_scored",
+        metadata: {
+          scenarioId: data.scenarioId,
+          scenarioName: data.scenarioName,
+          score: sc.overallScore,
+        },
+      });
 
       // Clear the pending data from sessionStorage
       sessionStorage.removeItem("cct-pending-score");

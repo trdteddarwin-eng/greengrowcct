@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Difficulty } from "@/lib/types";
+import { trackEvent } from "@/lib/tracking";
 import DocumentUpload from "@/components/wizard/DocumentUpload";
 import ScenarioConfig from "@/components/wizard/ScenarioConfig";
 import PersonaEditor from "@/components/wizard/PersonaEditor";
@@ -19,21 +20,35 @@ interface PersonaData {
   icon: string;
 }
 
+export interface ScenarioInitialData {
+  name: string;
+  difficulty: Difficulty;
+  industry: string;
+  persona: PersonaData;
+  documentText: string;
+  documentName: string;
+}
+
+interface ScenarioWizardProps {
+  editId?: string;
+  initialData?: ScenarioInitialData;
+}
+
 const STEPS = ["Document", "Configure", "Persona", "Review"];
 
-export default function ScenarioWizard() {
+export default function ScenarioWizard({ editId, initialData }: ScenarioWizardProps) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Wizard state
-  const [documentText, setDocumentText] = useState("");
-  const [documentName, setDocumentName] = useState("");
-  const [industry, setIndustry] = useState("");
-  const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
-  const [persona, setPersona] = useState<PersonaData | null>(null);
-  const [scenarioName, setScenarioName] = useState("");
+  // Wizard state — pre-populate from initialData when editing
+  const [documentText, setDocumentText] = useState(initialData?.documentText ?? "");
+  const [documentName, setDocumentName] = useState(initialData?.documentName ?? "");
+  const [industry, setIndustry] = useState(initialData?.industry ?? "");
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialData?.difficulty ?? "Medium");
+  const [persona, setPersona] = useState<PersonaData | null>(initialData?.persona ?? null);
+  const [scenarioName, setScenarioName] = useState(initialData?.name ?? "");
 
   function canProceed(): boolean {
     switch (step) {
@@ -57,29 +72,39 @@ export default function ScenarioWizard() {
     setError(null);
 
     try {
-      const res = await fetch("/api/scenarios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: scenarioName,
-          difficulty,
-          industry,
-          prospect_name: persona.name,
-          prospect_role: persona.role,
-          prospect_company: persona.company,
-          description: persona.description,
-          prospect_behavior: persona.behavior,
-          hook: persona.hook,
-          icon: persona.icon,
-          document_context: documentText || null,
-          document_name: documentName || null,
-        }),
-      });
+      const payload = {
+        name: scenarioName,
+        difficulty,
+        industry,
+        prospect_name: persona.name,
+        prospect_role: persona.role,
+        prospect_company: persona.company,
+        description: persona.description,
+        prospect_behavior: persona.behavior,
+        hook: persona.hook,
+        icon: persona.icon,
+        document_context: documentText || null,
+        document_name: documentName || null,
+      };
+
+      const res = await fetch(
+        editId ? `/api/scenarios/${editId}` : "/api/scenarios",
+        {
+          method: editId ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to save scenario");
       }
+
+      trackEvent({
+        eventType: editId ? "scenario_updated" : "scenario_created",
+        metadata: { scenarioName, industry, difficulty },
+      });
 
       router.push("/scenarios");
     } catch (err) {
@@ -217,7 +242,7 @@ export default function ScenarioWizard() {
             disabled={saving}
             className="px-5 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Save Scenario"}
+            {saving ? "Saving..." : editId ? "Update Scenario" : "Save Scenario"}
           </button>
         )}
       </div>

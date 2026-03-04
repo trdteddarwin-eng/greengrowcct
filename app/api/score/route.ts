@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { generateJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 import { scenarios } from "@/lib/scenarios";
 import { getScoringPrompt } from "@/lib/prompts";
@@ -120,10 +120,8 @@ function validateAndNormalizeScorecard(raw: Record<string, unknown>): Scorecard 
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GOOGLE_API_KEY;
-
-  if (!apiKey) {
-    console.error("GOOGLE_API_KEY is not set in environment variables");
+  if (!process.env.OPENROUTER_API_KEY) {
+    console.error("OPENROUTER_API_KEY is not set in environment variables");
     return NextResponse.json(
       { error: "API key not configured" },
       { status: 500 }
@@ -181,29 +179,7 @@ export async function POST(request: Request) {
       scoringRubric,
     );
 
-    const client = new GoogleGenAI({ apiKey });
-
-    const response = await client.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: scoringPromptText,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    const responseText = response.text;
-
-    if (!responseText) {
-      throw new Error("Empty response from Gemini API");
-    }
-
-    let parsed: Record<string, unknown>;
-    try {
-      parsed = JSON.parse(responseText);
-    } catch {
-      console.error("Failed to parse Gemini response as JSON:", responseText);
-      throw new Error("Gemini returned invalid JSON");
-    }
+    const parsed = await generateJSON<Record<string, unknown>>(scoringPromptText);
 
     const scorecard = validateAndNormalizeScorecard(parsed);
 

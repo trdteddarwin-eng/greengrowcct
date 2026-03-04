@@ -2,7 +2,7 @@
 // GreenGrow Digital CCT — Supabase Storage Utilities
 // ============================================================
 
-import type { CallSession } from "@/lib/types";
+import type { CallSession, UserEvent } from "@/lib/types";
 import { defaultPlaybookText } from "@/lib/default-playbook";
 import { createClient } from "@/lib/supabase/client";
 
@@ -128,6 +128,33 @@ export async function saveCall(session: CallSession): Promise<void> {
     });
   } catch (error) {
     console.error("Failed to save call:", error);
+  }
+}
+
+/**
+ * Returns user events for the current user from Supabase.
+ */
+export async function getUserEvents(limit = 100): Promise<UserEvent[]> {
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from("user_events")
+      .select("id, event_type, metadata, page_path, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return [];
+    return data as UserEvent[];
+  } catch {
+    return [];
   }
 }
 

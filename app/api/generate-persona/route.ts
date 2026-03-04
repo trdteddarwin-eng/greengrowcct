@@ -1,9 +1,8 @@
-import { GoogleGenAI } from "@google/genai";
+import { generateJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) {
+  if (!process.env.OPENROUTER_API_KEY) {
     return NextResponse.json(
       { error: "API key not configured" },
       { status: 500 }
@@ -35,8 +34,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    const client = new GoogleGenAI({ apiKey });
-
     const prompt = `You are a sales training scenario designer. Based on the following business document and parameters, create a realistic prospect persona for a cold call training simulation.
 
 DOCUMENT CONTENT:
@@ -75,20 +72,7 @@ Return ONLY valid JSON with this exact structure:
   "icon": "string (single emoji)"
 }`;
 
-    const response = await client.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    const responseText = response.text;
-    if (!responseText) {
-      throw new Error("Empty response from Gemini API");
-    }
-
-    const persona = JSON.parse(responseText);
+    const persona = await generateJSON(prompt);
     return NextResponse.json(persona);
   } catch (error) {
     console.error("Persona generation error:", error);

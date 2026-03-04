@@ -14,6 +14,7 @@ import { createAudioCapture } from "@/lib/audio-capture";
 import { createAudioPlayback } from "@/lib/audio-playback";
 import { createGeminiLiveSession, type GeminiLiveSessionHandle } from "@/lib/gemini-live";
 import AudioVisualizer from "@/components/AudioVisualizer";
+import { trackEvent } from "@/lib/tracking";
 
 type CallState = "idle" | "connecting" | "active" | "ending";
 
@@ -154,6 +155,15 @@ export default function CallInterface({
       });
       sessionRef.current = session;
 
+      // Track call started
+      trackEvent({
+        eventType: "call_started",
+        metadata: {
+          scenarioId: scenario.id,
+          scenarioName: scenario.name,
+        },
+      });
+
       // 6. Create audio capture and start streaming
       const capture = createAudioCapture((base64: string) => {
         if (sessionRef.current) {
@@ -175,6 +185,16 @@ export default function CallInterface({
     setCallState("ending");
     const finalTranscript = [...transcriptRef.current];
 
+    trackEvent({
+      eventType: "call_ended",
+      metadata: {
+        scenarioId: scenario.id,
+        scenarioName: scenario.name,
+        durationSeconds: elapsed,
+        transcriptLength: finalTranscript.length,
+      },
+    });
+
     cleanup();
 
     // Small delay for the "ending" animation before calling back
@@ -186,7 +206,7 @@ export default function CallInterface({
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto">
       {/* Prospect info bar */}
-      <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 mb-4">
+      <div className="rounded-xl border border-gray-800 bg-gray-900 p-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white">
@@ -315,7 +335,7 @@ export default function CallInterface({
         </div>
 
         {(callState === "active" || callState === "ending") && (
-          <p className="text-2xl font-mono text-white tabular-nums">
+          <p className="text-3xl text-white tabular-nums" style={{ fontFamily: "var(--font-geist-mono)" }}>
             {formatTime(elapsed)}
           </p>
         )}
@@ -330,8 +350,8 @@ export default function CallInterface({
       </div>
 
       {/* Transcript */}
-      <div className="flex-1 min-h-0 rounded-xl border border-gray-800 bg-gray-900/30 mb-4 overflow-hidden">
-        <div className="h-full max-h-72 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 min-h-0 rounded-xl border border-gray-800 bg-gray-950 mb-4 overflow-hidden">
+        <div className="h-full max-h-96 overflow-y-auto p-4 space-y-3">
           {transcript.length === 0 && callState !== "idle" && (
             <p className="text-gray-500 text-sm text-center py-8">
               Waiting for conversation to begin...
@@ -352,11 +372,11 @@ export default function CallInterface({
               <div
                 className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
                   turn.role === "rep"
-                    ? "bg-green-500/10 text-green-100 border border-green-500/20"
+                    ? "bg-green-950 text-green-100 border border-green-800"
                     : "bg-gray-800 text-gray-200 border border-gray-700"
                 }`}
               >
-                <p className="text-xs font-medium mb-1 opacity-60">
+                <p className="text-xs font-medium mb-1 opacity-75">
                   {turn.role === "rep" ? "You" : scenario.prospectName}
                 </p>
                 <p>{turn.text}</p>

@@ -2,11 +2,18 @@
 
 :root {
   --green-accent: #22c55e;
+  --font-display: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 body {
   background-color: #030712;
   color: #f9fafb;
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }
 
 /* Custom scrollbar for dark theme */
@@ -24,4 +31,9 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Utility: soft shadow for cards */
+.shadow-soft {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
 }

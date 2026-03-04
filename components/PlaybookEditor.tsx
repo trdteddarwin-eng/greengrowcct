@@ -58,7 +58,8 @@ export default function PlaybookEditor({
           onChange={handleChange}
           placeholder={PLACEHOLDER_TEXT}
           rows={20}
-          className="w-full rounded-xl border border-gray-800 bg-gray-900/50 px-5 py-4 text-sm text-gray-200 font-mono leading-relaxed placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50 resize-y min-h-[300px]"
+          className="w-full rounded-xl border border-gray-800 bg-gray-900 px-6 py-4 text-sm text-gray-200 leading-relaxed placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500/50 resize-y min-h-[300px]"
+          style={{ fontFamily: "var(--font-geist-mono)" }}
           spellCheck={false}
         />
       </div>

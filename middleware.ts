@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  const supabaseResponse = NextResponse.next({ request });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -30,30 +30,45 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh the auth session
+  const { pathname } = request.nextUrl;
+
+  // For the /auth page, use the fast getSession() check — just need to know
+  // if user is logged in to redirect away. No need for a full getUser() call.
+  if (pathname.startsWith("/auth")) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
+
+  // For all other matched routes, verify the user with getUser()
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
-  // Unauthenticated users get redirected to /auth (except /auth itself, API routes, and static assets)
-  if (
-    !user &&
-    !pathname.startsWith("/auth") &&
-    !pathname.startsWith("/api/") &&
-    !pathname.startsWith("/_next/")
-  ) {
+  // Unauthenticated users get redirected to /auth
+  if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth";
     return NextResponse.redirect(url);
   }
 
-  // Authenticated users trying to visit /auth get redirected to /
-  if (user && pathname.startsWith("/auth")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+  // Admin route protection — check profile role
+  if (pathname.startsWith("/admin")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || profile.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;
@@ -62,8 +77,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all paths except static files and images
+     * Only run middleware on page routes that need auth protection.
+     * Exclude: static files, images, API routes, and Next.js internals.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|_next/webpack|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2)$).*)",
   ],
 };

@@ -36,7 +36,7 @@ function ScenarioCard({
       onClick={() => onSelect(scenario)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="w-full text-left rounded-xl border border-gray-800 bg-gray-900/50 p-5 transition-shadow hover:shadow-lg hover:shadow-green-500/5 hover:border-gray-700 cursor-pointer"
+      className="w-full text-left rounded-xl border border-gray-800 bg-gray-900 p-6 transition-shadow hover:shadow-lg hover:shadow-green-500/5 hover:border-gray-700 hover:border-l-green-500 cursor-pointer"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <span className="text-3xl" role="img" aria-label={scenario.name}>

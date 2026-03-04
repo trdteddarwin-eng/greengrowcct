@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import PlaybookEditor from "@/components/PlaybookEditor";
 import { getPlaybook, savePlaybook } from "@/lib/storage";
 import { defaultPlaybook } from "@/lib/default-playbook";
+import { trackEvent } from "@/lib/tracking";
 
 export default function PlaybookPage() {
   const [playbookText, setPlaybookText] = useState<string>("");
@@ -22,6 +23,7 @@ export default function PlaybookPage() {
     await savePlaybook(text);
     setPlaybookText(text);
     setSaved(true);
+    trackEvent({ eventType: "playbook_saved" });
     setTimeout(() => setSaved(false), 2500);
   }
 

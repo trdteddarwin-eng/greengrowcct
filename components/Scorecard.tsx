@@ -89,11 +89,11 @@ function DimensionCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-      className="rounded-xl border border-gray-800 bg-gray-900/50 p-5"
+      className="rounded-xl border border-gray-800 bg-gray-900 p-6"
     >
       {/* Header: label + score */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-white">{dim.label}</h3>
+        <h3 className="text-base font-semibold text-white">{dim.label}</h3>
         <span className={`text-lg font-bold ${getScoreColor(dim.score)}`}>
           {dim.score}
         </span>
@@ -116,7 +116,7 @@ function DimensionCard({
             <p className="text-xs font-medium text-green-400 mb-1">
               What went well
             </p>
-            <p className="text-xs text-gray-300 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed">
               {dim.whatWentWell}
             </p>
           </div>
@@ -126,7 +126,7 @@ function DimensionCard({
             <p className="text-xs font-medium text-amber-400 mb-1">
               What to improve
             </p>
-            <p className="text-xs text-gray-300 leading-relaxed">
+            <p className="text-sm text-gray-200 leading-relaxed">
               {dim.whatToImprove}
             </p>
           </div>
@@ -137,18 +137,18 @@ function DimensionCard({
       {(dim.exampleSaid || dim.shouldHaveSaid) && (
         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-800">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1.5 font-medium">
+            <p className="text-xs uppercase tracking-wider text-gray-500 mb-1.5 font-medium">
               What you said
             </p>
-            <p className="text-xs text-gray-400 leading-relaxed italic">
+            <p className="text-sm text-gray-300 leading-relaxed italic">
               {dim.exampleSaid || "N/A"}
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1.5 font-medium">
+            <p className="text-xs uppercase tracking-wider text-gray-500 mb-1.5 font-medium">
               What you should have said
             </p>
-            <p className="text-xs text-green-300/80 leading-relaxed italic">
+            <p className="text-sm text-green-300 leading-relaxed">
               {dim.shouldHaveSaid || "N/A"}
             </p>
           </div>
@@ -170,8 +170,8 @@ export default function Scorecard({
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <p className="text-sm text-gray-400 mb-1">Performance Review</p>
-        <h1 className="text-xl font-bold text-white mb-6">{scenarioName}</h1>
+        <p className="text-xs uppercase tracking-widest font-semibold text-gray-500 mb-1">Performance Review</p>
+        <h1 className="text-2xl font-bold text-white mb-6">{scenarioName}</h1>
         <CircularScore score={scorecard.overallScore} />
       </motion.div>
 
@@ -201,7 +201,7 @@ export default function Scorecard({
               Top Strength
             </p>
           </div>
-          <p className="text-sm text-gray-300">{scorecard.topStrength}</p>
+          <p className="text-base text-gray-200">{scorecard.topStrength}</p>
         </div>
 
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
@@ -223,7 +223,7 @@ export default function Scorecard({
               Top Improvement
             </p>
           </div>
-          <p className="text-sm text-gray-300">{scorecard.topImprovement}</p>
+          <p className="text-base text-gray-200">{scorecard.topImprovement}</p>
         </div>
       </motion.div>
 
@@ -240,10 +240,10 @@ export default function Scorecard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1 }}
-          className="rounded-xl border border-gray-800 bg-gray-900/50 p-5"
+          className="rounded-xl border border-gray-800 bg-gray-900 p-6"
         >
-          <h2 className="text-sm font-semibold text-white mb-2">Summary</h2>
-          <p className="text-sm text-gray-400 leading-relaxed">
+          <h2 className="text-base font-semibold text-white mb-2">Summary</h2>
+          <p className="text-sm text-gray-300 leading-relaxed">
             {scorecard.summary}
           </p>
         </motion.div>
