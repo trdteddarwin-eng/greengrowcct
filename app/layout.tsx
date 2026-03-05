@@ -20,12 +20,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-gray-950 text-gray-50 font-[family-name:var(--font-inter)]">
         <AuthProvider>
           <TrackingProvider>
-            <Header />
-            <main className="pt-[3.5rem] lg:pt-0 lg:pl-60 min-h-screen">
-              <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl">
-                {children}
-              </div>
-            </main>
+            <div className="flex">
+              <Header />
+              <main className="flex-1 min-h-screen">
+                <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-6xl">
+                  {children}
+                </div>
+              </main>
+            </div>
           </TrackingProvider>
         </AuthProvider>
       </body>

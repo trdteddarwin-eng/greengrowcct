@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Sparkles, TrendingUp } from "lucide-react";
 import type { Scorecard as ScorecardType, DimensionScore } from "@/lib/types";
 
 interface ScorecardProps {
@@ -184,19 +185,7 @@ export default function Scorecard({
       >
         <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <svg
-              className="w-4 h-4 text-green-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-              />
-            </svg>
+            <Sparkles className="w-4 h-4 text-green-500" />
             <p className="text-xs font-semibold text-green-400 uppercase tracking-wider">
               Top Strength
             </p>
@@ -206,19 +195,7 @@ export default function Scorecard({
 
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <svg
-              className="w-4 h-4 text-amber-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              />
-            </svg>
+            <TrendingUp className="w-4 h-4 text-amber-500" />
             <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
               Top Improvement
             </p>

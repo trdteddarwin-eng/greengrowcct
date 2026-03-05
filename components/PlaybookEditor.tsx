@@ -79,14 +79,14 @@ export default function PlaybookEditor({
           <button
             type="button"
             onClick={handleReset}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 border border-gray-800 hover:text-white hover:border-gray-700 hover:bg-gray-800/50 transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl text-sm font-medium text-gray-400 border border-gray-800 hover:text-white hover:border-gray-700 hover:bg-gray-800/50 transition-colors cursor-pointer"
           >
             Reset to Default
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2 rounded-lg text-sm font-semibold bg-green-500 text-white hover:bg-green-600 transition-colors shadow-sm shadow-green-500/20 cursor-pointer"
+            className="px-6 py-2 rounded-xl text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors shadow-lg shadow-green-500/20 cursor-pointer"
           >
             Save
           </button>

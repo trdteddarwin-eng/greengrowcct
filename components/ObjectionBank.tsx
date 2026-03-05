@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Ban, ChevronDown } from "lucide-react";
 import { objections } from "@/lib/objections";
 import type { ObjectionEntry } from "@/lib/types";
 
@@ -19,39 +20,17 @@ function ObjectionCard({ entry }: { entry: ObjectionEntry }) {
       >
         <div className="flex items-start gap-3 min-w-0">
           <span className="text-red-400 mt-0.5 flex-shrink-0">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-              />
-            </svg>
+            <Ban className="w-4 h-4" />
           </span>
           <p className="text-sm font-semibold text-white leading-relaxed">
             &ldquo;{entry.objection}&rdquo;
           </p>
         </div>
-        <svg
+        <ChevronDown
           className={`w-4 h-4 text-gray-500 flex-shrink-0 mt-1 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </button>
 
       {/* Expandable response area */}

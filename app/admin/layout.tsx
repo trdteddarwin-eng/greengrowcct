@@ -15,8 +15,8 @@ export default function AdminLayout({
         {/* Admin Sidebar */}
         <AdminSidebar />
 
-        {/* Main content area — offset by admin sidebar width on desktop */}
-        <div className="flex-1 lg:ml-60 w-full">
+        {/* Main content area */}
+        <div className="flex-1 w-full">
           <div className="p-6 lg:p-8 max-w-7xl">
             {children}
           </div>

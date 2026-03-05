@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Phone, Trash2 } from "lucide-react";
 import ScoreChart from "@/components/ScoreChart";
 import CallHistory from "@/components/CallHistory";
 import { getCallHistory, clearHistory } from "@/lib/storage";
@@ -40,7 +41,9 @@ export default function HistoryPage() {
         transition={{ duration: 0.4 }}
       >
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-10 max-w-md">
-          <div className="text-5xl mb-4">&#x1F4DE;</div>
+          <div className="flex justify-center mb-4">
+            <Phone className="w-12 h-12 text-gray-600" />
+          </div>
           <h2 className="text-xl font-semibold text-gray-200 mb-2">
             No Calls Yet
           </h2>
@@ -49,7 +52,7 @@ export default function HistoryPage() {
           </p>
           <a
             href="/"
-            className="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors shadow-lg shadow-green-500/20"
           >
             Start Practicing
           </a>
@@ -77,8 +80,9 @@ export default function HistoryPage() {
         {history.length > 0 && (
           <button
             onClick={handleClearHistory}
-            className="px-4 py-2 text-sm bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-500/30 rounded-lg transition-colors"
+            className="group inline-flex items-center gap-2 px-4 py-2 text-sm bg-gray-800 hover:bg-red-900/50 text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-500/30 rounded-lg transition-colors"
           >
+            <Trash2 className="w-4 h-4 transition-colors group-hover:text-red-400" />
             Clear History
           </button>
         )}

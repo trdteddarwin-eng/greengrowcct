@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Lightbulb } from "lucide-react";
 import ObjectionBank from "@/components/ObjectionBank";
 
 export default function ObjectionsPage() {
@@ -25,7 +26,7 @@ export default function ObjectionsPage() {
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-10">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0 mt-0.5 h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-            <span className="text-green-500 text-lg">&#x1F4A1;</span>
+            <Lightbulb className="w-5 h-5 text-green-500" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-200 mb-1">How to Use This</h3>

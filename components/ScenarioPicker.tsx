@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { User, Plus } from "lucide-react";
 import { scenarios } from "@/lib/scenarios";
 import type { Scenario } from "@/lib/types";
 
@@ -36,7 +37,7 @@ function ScenarioCard({
       onClick={() => onSelect(scenario)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="w-full text-left rounded-xl border border-gray-800 bg-gray-900 p-6 transition-shadow hover:shadow-lg hover:shadow-green-500/5 hover:border-gray-700 hover:border-l-green-500 cursor-pointer"
+      className="group/scenario w-full text-left rounded-xl border border-gray-800 bg-gray-900 p-6 transition-shadow hover:shadow-lg hover:shadow-green-500/5 hover:border-gray-700 hover:border-l-green-500 cursor-pointer"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <span className="text-3xl" role="img" aria-label={scenario.name}>
@@ -51,7 +52,7 @@ function ScenarioCard({
         </span>
       </div>
 
-      <h3 className="text-base font-semibold text-white mb-1">
+      <h3 className="text-base font-semibold text-white mb-1 transition-transform group-hover/scenario:translate-x-0.5">
         {scenario.name}
       </h3>
 
@@ -60,19 +61,7 @@ function ScenarioCard({
       </p>
 
       <div className="flex items-center gap-2 text-xs text-gray-500">
-        <svg
-          className="w-3.5 h-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          />
-        </svg>
+        <User className="w-3.5 h-3.5" />
         <span>
           {scenario.prospectName}, {scenario.prospectRole}
         </span>
@@ -112,21 +101,9 @@ export default function ScenarioPicker({ onSelect, customScenarios = [] }: Scena
             ))}
             <Link
               href="/scenarios/create"
-              className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-700 bg-gray-900/30 p-5 hover:border-green-500/50 hover:bg-green-500/5 transition-colors min-h-[180px]"
+              className="group/create flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-700 bg-gray-900/30 p-5 hover:border-green-500/50 hover:bg-green-500/5 transition-colors min-h-[180px]"
             >
-              <svg
-                className="w-8 h-8 text-gray-500 mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
+              <Plus className="w-8 h-8 text-gray-500 mb-2 transition-transform group-hover/create:scale-110" strokeWidth={1.5} />
               <span className="text-sm text-gray-400">Create New</span>
             </Link>
           </div>
@@ -144,21 +121,9 @@ export default function ScenarioPicker({ onSelect, customScenarios = [] }: Scena
           </div>
           <Link
             href="/scenarios/create"
-            className="flex items-center gap-4 rounded-xl border-2 border-dashed border-gray-700 bg-gray-900/30 p-5 hover:border-green-500/50 hover:bg-green-500/5 transition-colors"
+            className="group/create flex items-center gap-4 rounded-xl border-2 border-dashed border-gray-700 bg-gray-900/30 p-5 hover:border-green-500/50 hover:bg-green-500/5 transition-colors"
           >
-            <svg
-              className="w-8 h-8 text-gray-500 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
+            <Plus className="w-8 h-8 text-gray-500 shrink-0 transition-transform group-hover/create:scale-110" strokeWidth={1.5} />
             <div>
               <p className="text-sm font-medium text-gray-300">Create a Custom Scenario</p>
               <p className="text-xs text-gray-500">Upload a document and let AI generate a realistic prospect</p>

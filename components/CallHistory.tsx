@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Phone } from "lucide-react";
 import type { CallSession } from "@/lib/types";
 
 interface CallHistoryProps {
@@ -83,21 +84,11 @@ function HistoryRow({ session }: { session: CallSession }) {
           </div>
 
           {/* Expand chevron */}
-          <svg
+          <ChevronDown
             className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
               expanded ? "rotate-180" : ""
             }`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
+          />
         </div>
       </button>
 
@@ -166,7 +157,9 @@ export default function CallHistory({ history }: CallHistoryProps) {
   if (sortedHistory.length === 0) {
     return (
       <div className="rounded-xl border border-gray-800 bg-gray-900/30 p-12 text-center">
-        <div className="text-4xl mb-4 opacity-50">📞</div>
+        <div className="flex justify-center mb-4">
+          <Phone className="w-10 h-10 text-gray-600" />
+        </div>
         <h3 className="text-base font-medium text-gray-300 mb-2">
           No calls yet
         </h3>

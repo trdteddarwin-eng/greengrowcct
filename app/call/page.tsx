@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import CallInterface from "@/components/CallInterface";
 import { scenarios } from "@/lib/scenarios";
 import { resolveScenario } from "@/lib/scenario-resolver";
@@ -13,6 +14,8 @@ function CallPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const scenarioId = searchParams.get("scenario");
+  const taskId = searchParams.get("task");
+  const assignmentId = searchParams.get("assignment");
 
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [documentContext, setDocumentContext] = useState<string | undefined>();
@@ -59,7 +62,9 @@ function CallPageContent() {
         transition={{ duration: 0.4 }}
       >
         <div className="bg-gray-900 border border-red-500/30 rounded-xl p-8 max-w-md">
-          <div className="text-4xl mb-4">&#x26A0;</div>
+          <div className="flex justify-center mb-4">
+            <AlertTriangle className="w-10 h-10 text-red-400" />
+          </div>
           <h2 className="text-xl font-semibold text-red-400 mb-2">
             Scenario Not Found
           </h2>
@@ -70,7 +75,7 @@ function CallPageContent() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors shadow-lg shadow-green-500/20"
           >
             Back to Dashboard
           </Link>
@@ -80,11 +85,13 @@ function CallPageContent() {
   }
 
   function handleCallEnd(transcript: TranscriptTurn[]) {
-    const pendingData = {
+    const pendingData: Record<string, unknown> = {
       transcript,
       scenarioId: scenario!.id,
       scenarioName: scenario!.name,
     };
+    if (taskId) pendingData.taskId = taskId;
+    if (assignmentId) pendingData.assignmentId = assignmentId;
     sessionStorage.setItem("cct-pending-score", JSON.stringify(pendingData));
     router.push("/scorecard");
   }
