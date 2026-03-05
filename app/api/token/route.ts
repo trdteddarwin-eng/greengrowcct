@@ -3,15 +3,17 @@ import { NextResponse } from "next/server";
 import type { TokenResponse } from "@/lib/types";
 
 export async function POST() {
-  const apiKey = process.env.GOOGLE_API_KEY;
+  const apiKey = process.env.GOOGLE_API_KEY?.trim();
 
   if (!apiKey) {
-    console.error("GOOGLE_API_KEY is not set in environment variables");
     return NextResponse.json(
-      { error: "API key not configured" },
+      { error: "API key not configured", debug: "GOOGLE_API_KEY is empty or missing" },
       { status: 500 }
     );
   }
+
+  // Debug: return key length and first/last chars to verify it's correct
+  const keyDebug = `len=${apiKey.length}, starts=${apiKey.substring(0, 6)}, ends=${apiKey.substring(apiKey.length - 4)}`;
 
   try {
     const client = new GoogleGenAI({ apiKey });
@@ -38,6 +40,6 @@ export async function POST() {
     const message =
       error instanceof Error ? error.message : "Failed to generate token";
     console.error("Token generation error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message, keyDebug }, { status: 500 });
   }
 }
