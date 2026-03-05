@@ -202,20 +202,30 @@ export interface GeminiLiveConfig {
   onError: (error: string) => void;
 }
 
-// --- Pre-Call Research ---
+// --- Call Helper ---
 
-export interface MarketingAngle {
-  service: string;
-  reason: string;
-}
-
-export interface ResearchResult {
+export interface HelperResult {
+  industry: string;
   businessName: string;
   businessSummary: string;
+  recommendedService: string;
+  whyThisService: string;
+  roiProjection: string;
+  socialProof: string;
   talkingPoints: string[];
-  marketingAngles: MarketingAngle[];
   painPoints: string[];
-  suggestedOpener: string;
+  coldCallScript: {
+    opener: string;
+    bridge: string;
+    painProbe: string;
+    valueDrop: string;
+    objectionHandle: string;
+    close: string;
+  };
+  likelyObjections: {
+    objection: string;
+    response: string;
+  }[];
   suggestedApproach: string;
 }
 
@@ -249,6 +259,86 @@ export interface UserEvent {
   metadata: Record<string, unknown>;
   page_path: string | null;
   created_at: string;
+}
+
+// --- Tasks ---
+
+export type TaskStatus = "active" | "archived";
+export type AssignmentStatus = "pending" | "in_progress" | "completed";
+
+export interface Task {
+  id: string;
+  created_by: string;
+  title: string;
+  description: string;
+  scenario_id: string;
+  scenario_name: string;
+  due_date: string | null;
+  status: TaskStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TaskAssignment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  status: AssignmentStatus;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export interface TaskAttempt {
+  id: string;
+  task_id: string;
+  assignment_id: string;
+  user_id: string;
+  score: number | null;
+  duration_seconds: number | null;
+  started_at: string;
+  completed_at: string | null;
+}
+
+/** User-facing task with assignment info merged in */
+export interface UserTask {
+  id: string;
+  title: string;
+  description: string;
+  scenario_id: string;
+  scenario_name: string;
+  due_date: string | null;
+  assignment_id: string;
+  assignment_status: AssignmentStatus;
+  attempt_count: number;
+  best_score: number | null;
+  created_at: string;
+}
+
+/** Admin-facing task with assignment summary */
+export interface AdminTask {
+  id: string;
+  title: string;
+  description: string;
+  scenario_id: string;
+  scenario_name: string;
+  due_date: string | null;
+  status: TaskStatus;
+  created_at: string;
+  total_assigned: number;
+  completed_count: number;
+  avg_score: number | null;
+}
+
+/** Admin task detail — assignment with user info and attempts */
+export interface AdminTaskAssignment {
+  id: string;
+  user_id: string;
+  display_name: string;
+  email: string;
+  status: AssignmentStatus;
+  completed_at: string | null;
+  attempts: TaskAttempt[];
+  best_score: number | null;
 }
 
 // --- Audio ---

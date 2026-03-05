@@ -220,7 +220,7 @@ export default function LiveCallPage() {
 
       if (scrapeRes.ok && scrapeData.text) {
         // Get research summary for context
-        const researchRes = await fetch("/api/research", {
+        const researchRes = await fetch("/api/helper", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -233,7 +233,7 @@ export default function LiveCallPage() {
         if (researchRes.ok && researchData.research) {
           const r = researchData.research;
           setBusinessContext(
-            `Business: ${r.businessName}\nSummary: ${r.businessSummary}\nPain Points: ${r.painPoints.join("; ")}\nMarketing Angles: ${r.marketingAngles.map((a: { service: string; reason: string }) => a.service).join(", ")}`
+            `Business: ${r.businessName}\nIndustry: ${r.industry}\nSummary: ${r.businessSummary}\nRecommended Service: ${r.recommendedService}\nPain Points: ${r.painPoints.join("; ")}`
           );
         }
       }
@@ -247,17 +247,20 @@ export default function LiveCallPage() {
   const isListening = callState === "active";
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white">
-            Live Call <span className="text-amber-500">Assistant</span>
-          </h1>
-          <p className="mt-2 text-gray-400 text-sm">
-            Listen to your real calls and get coaching suggestions in real-time.
-          </p>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Live Call <span className="text-amber-500">Assistant</span>
+        </h1>
+        <p className="mt-2 text-gray-400">
+          Listen to your real calls and get coaching suggestions in real-time.
+        </p>
+      </div>
 
         {/* Optional: Business context loader */}
         {callState === "idle" && (
@@ -271,7 +274,7 @@ export default function LiveCallPage() {
                 value={contextUrl}
                 onChange={(e) => setContextUrl(e.target.value)}
                 placeholder="https://business-website.com"
-                className="flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-colors"
+                className="flex-1 rounded-xl border border-gray-800 bg-gray-900 px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-colors"
               />
               <button
                 type="button"
@@ -429,7 +432,6 @@ export default function LiveCallPage() {
             />
           </div>
         </div>
-      </div>
-    </div>
+    </motion.div>
   );
 }

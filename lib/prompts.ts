@@ -189,10 +189,15 @@ The "shouldHaveSaid" field is critical — it must be a realistic, word-for-word
 
 /**
  * Builds the prompt for Gemini to analyze a business website and generate
- * structured research for pre-call preparation.
+ * structured cold call coaching for pre-call preparation.
  */
-export function getResearchPrompt(websiteText: string, url: string): string {
-  return `You are an expert B2B sales researcher preparing a cold call rep for a call to a local business. Analyze the following website content and generate actionable research.
+export function getHelperPrompt(websiteText: string, url: string): string {
+  return `You are an elite cold call coach for GreenGrow Digital, a company that sells:
+- Custom AI automation (workflows, lead follow-up, appointment setting)
+- Custom AI chatbots (website chatbots, WhatsApp bots, lead capture bots)
+- Digital marketing (SEO, Google Ads, social media, email marketing)
+
+Your job is to analyze a business website and prepare a sales rep with EVERYTHING they need to crush a cold call — industry context, business intel, the exact words to say, and how to handle pushback.
 
 WEBSITE URL: ${url}
 
@@ -202,42 +207,65 @@ ${websiteText}
 ---
 
 INSTRUCTIONS:
-Analyze this business's website and extract everything a cold caller needs to have a great conversation. Think like a sales rep who wants to sound informed and relevant, not like they're reading from a script.
+1. Identify the industry immediately
+2. Understand what this business does, who they serve, and their differentiators
+3. Decide which GreenGrow service fits best (AI chatbot, automation, SEO, ads, etc.) based on gaps you see
+4. Figure out the ROI angle — what specific results would this business see
+5. Write a COMPLETE cold call script — word for word, from opener to close
+6. Include industry-relevant social proof ("We just helped another [type of business] and they saw [result]")
+7. Anticipate 2-3 objections the prospect will likely raise and provide exact rebuttals
+
+PITCH FRAMEWORK:
+- ROI-focused — always talk in terms of revenue, leads, time saved, money made
+- Social proof — "We recently worked with another [industry] business and [specific result]"
+- Confidence close — "If you'd like this system, great. If not, we have other solutions that we guarantee will get you results"
 
 Your response must be ONLY valid JSON matching this exact structure (no markdown, no code blocks — just the JSON object):
 
 {
+  "industry": "<the industry this business is in, e.g. 'Medical Spa / Aesthetics', 'Roofing / Home Services'>",
   "businessName": "<the business name as it appears on the site>",
-  "businessSummary": "<2-3 sentence summary of what this business does, who they serve, and what makes them different>",
+  "businessSummary": "<2-3 sentences: what they do, who they serve, what makes them different>",
+  "recommendedService": "<which GreenGrow service to lead with, e.g. 'AI Chatbot for Lead Capture', 'Google Ads Management', 'AI Appointment Setting Automation'>",
+  "whyThisService": "<1-2 sentences on why this specific service fits THIS business based on what you see on their site>",
+  "roiProjection": "<specific ROI projection, e.g. 'Based on similar med spas, this could generate 30-50 new leads/month' or 'Businesses like this typically see a 3x return on ad spend within 90 days'>",
+  "socialProof": "<industry-relevant social proof, e.g. 'We recently helped another med spa boost their bookings by 40% in the first month' — make it believable and specific to their industry>",
   "talkingPoints": [
-    "<specific thing from the site the rep can reference to sound informed — e.g. a recent blog post, an award, a new service, a team member>",
-    "<another specific detail — mention their location, years in business, or a unique offering>",
-    "<a third detail — look for testimonials, case studies, partnerships, or community involvement>"
-  ],
-  "marketingAngles": [
-    {
-      "service": "<specific marketing service that would help this business — e.g. 'Google Ads for [their service]'>",
-      "reason": "<why this service makes sense based on what you see on their site>"
-    },
-    {
-      "service": "<another relevant service>",
-      "reason": "<why>"
-    },
-    {
-      "service": "<a third option>",
-      "reason": "<why>"
-    }
+    "<specific thing from the site the rep can reference to sound informed — a service, team member, recent update, award>",
+    "<another specific detail — location, years in business, unique offering>",
+    "<a third detail — testimonials, partnerships, community involvement>"
   ],
   "painPoints": [
-    "<likely pain point based on their industry and what's missing from their site — e.g. 'No online booking system visible'>",
-    "<another gap or challenge — e.g. 'Blog hasn't been updated in months'>",
-    "<a third one — e.g. 'No Google reviews widget or social proof section'>"
+    "<likely gap based on their industry and what's missing from their site — e.g. 'No online booking system visible'>",
+    "<another challenge — e.g. 'No live chat or chatbot to capture after-hours leads'>",
+    "<a third one — e.g. 'Relying on word-of-mouth with no digital lead generation'>"
   ],
-  "suggestedOpener": "<a complete, word-for-word pattern interrupt opener the rep can use — must reference the business by name and something specific from the site. Follow the pattern: acknowledge cold call, reference something specific, ask for 30 seconds>",
-  "suggestedApproach": "<2-3 sentences describing the overall strategy for this call — which pain point to lead with, what value drop to use, what kind of meeting to propose>"
+  "coldCallScript": {
+    "opener": "<pattern interrupt opener — acknowledge the cold call, reference something SPECIFIC from their site by name, ask for 30 seconds. Example: 'Hey [name], I know this is a cold call — I was just looking at [business name]'s website and noticed [specific detail]. Mind if I take 30 seconds to tell you why I called?'>",
+    "bridge": "<permission bridge with social proof — transition from opener to pitch. Example: 'The reason I'm calling is we just helped another [industry] business [specific result], and when I saw your site I thought you might be in a similar position.'>",
+    "painProbe": "<question to uncover their specific pain — make it open-ended and relevant to what you noticed. Example: 'I'm curious — how are you currently handling [relevant process, e.g. lead follow-up, online bookings, after-hours inquiries]?'>",
+    "valueDrop": "<ROI-focused value statement with numbers — Example: 'What we've been doing for businesses like yours is [specific solution], and on average they're seeing [specific metric]. For a business your size, that could mean [projected result].'>",
+    "objectionHandle": "<preemptive handling of the most likely pushback — Example: 'And look, I totally get if you're thinking [likely objection]. That's actually exactly what [social proof client] said before they saw [result].'>",
+    "close": "<confidence close with specific next step — Example: 'Here's what I'd suggest — let me put together a quick demo showing exactly what this would look like for [business name]. If you like it, great. If not, no pressure at all. Would [day] or [day] work better for a quick 15-minute look?'>"
+  },
+  "likelyObjections": [
+    {
+      "objection": "<most likely objection, e.g. 'We already work with someone for that'>",
+      "response": "<word-for-word rebuttal — acknowledge, pivot, re-engage. Example: 'Totally understand — most of our best clients came from another provider. The difference is [specific differentiator]. Would it hurt to see a comparison?'>"
+    },
+    {
+      "objection": "<second likely objection, e.g. 'We don't have the budget right now'>",
+      "response": "<word-for-word rebuttal>"
+    },
+    {
+      "objection": "<third likely objection, e.g. 'Just send me an email'>",
+      "response": "<word-for-word rebuttal>"
+    }
+  ],
+  "suggestedApproach": "<2-3 sentence overall strategy for this call — which pain point to lead with, what angle to take, what the close should be>"
 }
 
-Be specific and actionable. Reference actual details from the website — names, services, locations, features. Generic advice is useless. The rep should feel like they know this business after reading your research.`;
+Be SPECIFIC. Reference actual details from their website — names, services, locations, features. The rep should feel like they deeply understand this business and have a word-for-word game plan. Generic advice is useless — every field should be tailored to THIS specific business.`;
 }
 
 /**

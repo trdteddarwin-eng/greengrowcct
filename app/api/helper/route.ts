@@ -1,7 +1,7 @@
 import { generateJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
-import { getResearchPrompt } from "@/lib/prompts";
-import type { ResearchResult } from "@/lib/types";
+import { getHelperPrompt } from "@/lib/prompts";
+import type { HelperResult } from "@/lib/types";
 
 export async function POST(request: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
@@ -40,15 +40,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const prompt = getResearchPrompt(websiteText, url);
+    const prompt = getHelperPrompt(websiteText, url);
 
-    const parsed = await generateJSON<ResearchResult>(prompt);
+    const parsed = await generateJSON<HelperResult>(prompt);
 
     return NextResponse.json({ research: parsed });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Failed to analyze website";
-    console.error("Research error:", message);
+    console.error("Helper error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
